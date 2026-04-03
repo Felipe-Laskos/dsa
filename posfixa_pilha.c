@@ -98,7 +98,7 @@ int calculaPosfix(char expressao[]) {
 }
 
 int main(void) {
-  printf("%d", calculaPosfix("34+2*1-"));
+  printf("%d\n", calculaPosfix("58+3*"));
 
   return 1;
 }
