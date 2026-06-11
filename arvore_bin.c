@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct Node {
     struct Node* right;
@@ -48,6 +49,20 @@ void insert(Tree* t, int num) {
   insert_helper(t->root, node); 
 }
 
+int search(Node* node, int num) {
+  if(node == NULL) return 0;
+
+  if(node->data == num) return 1;
+
+  if(num >= node->data) return search(node->right, num);
+
+  return search(node->left, num);
+}
+
+// int remove(Tree* t, int num) {
+//
+// }
+
 int main(void) {
 
     Tree t; 
@@ -61,6 +76,8 @@ int main(void) {
     insert(&t, 3);
     insert(&t, 1);
     insert(&t, 8);
+
+    printf("%d", search(t.root, 2));
 
     return 0;
 }
