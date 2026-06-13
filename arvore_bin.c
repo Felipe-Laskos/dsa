@@ -59,25 +59,64 @@ int search(Node* node, int num) {
   return search(node->left, num);
 }
 
-// int remove(Tree* t, int num) {
-//
-// }
+Node* removeNodeHelper(Node* node, int num, int* removed) {
+  if(node == NULL) return NULL;
+
+  if(num < node->data) {
+    node->left = removeNodeHelper(node->left, num, removed);
+  } else if(num > node->data) {
+    node->right = removeNodeHelper(node->right, num, removed);
+  } else {
+    *removed = 1;
+
+    if(node->left == NULL) {
+      Node* child = node->right;
+      free(node);
+      return child;
+    }
+    if(node->right == NULL) {
+      Node* child = node->left;
+      free(node);
+      return child;
+    }
+
+    Node* successor = node->right;
+    while(successor->left != NULL) {
+      successor = successor->left;
+    }
+
+    node->data = successor->data;
+    node->right = removeNodeHelper(node->right, successor->data, removed);
+  }
+
+  return node;
+}
+
+int removeNode(Tree* t, int num) {
+  int removed = 0;
+  t->root = removeNodeHelper(t->root, num, &removed);
+  return removed;
+}
+
+void inorder(Node* node) {
+  if(node == NULL) return;
+  inorder(node->left);
+  printf("%d ", node->data);
+  inorder(node->right);
+}
 
 int main(void) {
 
-    Tree t; 
+    Tree t;
 
     initialize(&t);
 
     insert(&t, 5);
     insert(&t, 7);
     insert(&t, 2);
-    insert(&t, 9);
-    insert(&t, 3);
-    insert(&t, 1);
-    insert(&t, 8);
+    insert(&t, 6);
 
-    printf("%d", search(t.root, 2));
+    removeNode(&t, 5);
 
     return 0;
 }
