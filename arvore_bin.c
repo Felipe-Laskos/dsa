@@ -43,10 +43,10 @@ void insert(Tree* t, int num) {
 
   if(t->root == NULL) {
     t->root = node;
-    return; 
+    return;
   }
 
-  insert_helper(t->root, node); 
+  insert_helper(t->root, node);
 }
 
 int search(Node* node, int num) {
@@ -59,50 +59,47 @@ int search(Node* node, int num) {
   return search(node->left, num);
 }
 
-Node* removeNodeHelper(Node* node, int num, int* removed) {
-  if(node == NULL) return NULL;
+int removeNode(Tree* t, int num) {
+  Node* parent = NULL;
+  Node* aux = t->root;
 
-  if(num < node->data) {
-    node->left = removeNodeHelper(node->left, num, removed);
-  } else if(num > node->data) {
-    node->right = removeNodeHelper(node->right, num, removed);
-  } else {
-    *removed = 1;
+  while(aux != NULL && aux->data != num) {
+    parent = aux;
 
-    if(node->left == NULL) {
-      Node* child = node->right;
-      free(node);
-      return child;
-    }
-    if(node->right == NULL) {
-      Node* child = node->left;
-      free(node);
-      return child;
-    }
-
-    Node* successor = node->right;
-    while(successor->left != NULL) {
-      successor = successor->left;
-    }
-
-    node->data = successor->data;
-    node->right = removeNodeHelper(node->right, successor->data, removed);
+    if(num >= aux->data) aux = aux->right;
+    else aux = aux->left;
   }
 
-  return node;
-}
+  if(aux == NULL) return 0;
 
-int removeNode(Tree* t, int num) {
-  int removed = 0;
-  t->root = removeNodeHelper(t->root, num, &removed);
-  return removed;
-}
+  if(aux->left != NULL && aux->right != NULL) {
+    Node* sucParent = aux;
+    Node* sucessor = aux->right;
 
-void inorder(Node* node) {
-  if(node == NULL) return;
-  inorder(node->left);
-  printf("%d ", node->data);
-  inorder(node->right);
+    while(sucessor->left != NULL) {
+      sucParent = sucessor;
+      sucessor = sucessor->left;
+    }
+
+    aux->data = sucessor->data;
+
+    parent = sucParent;
+    aux = sucessor;
+  }
+
+  Node* child = (aux->left != NULL) ? aux->left : aux->right;
+
+  if(parent == NULL) {
+    t->root = child;
+  } else if(parent->left == aux) {
+    parent->left = child;
+  } else {
+    parent->right = child;
+  }
+
+  free(aux);
+
+  return 1;
 }
 
 int main(void) {
@@ -115,8 +112,11 @@ int main(void) {
     insert(&t, 7);
     insert(&t, 2);
     insert(&t, 6);
+    insert(&t, 9);
+    insert(&t, 3);
+    insert(&t, 1);
 
-    removeNode(&t, 5);
+    removeNode(&t, 7);
 
     return 0;
 }
