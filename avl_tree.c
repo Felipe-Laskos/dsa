@@ -101,6 +101,50 @@ Node* insert(Node* node, int data) {
   return node;
 }
 
+Node* removeNode(Node* node, int data) {
+  if(node == NULL) return NULL;
+
+  if(data < node->data) {
+    node->left = removeNode(node->left, data);
+  } else if (data > node->data) {
+    node->right = removeNode(node->right, data);
+  } else {
+    if(node->left == NULL || node->right == NULL) {
+      Node* child = node->left ? node->left : node->right;
+      free(node);
+      return child;
+    }
+
+    Node* succ = node->right;
+    while(succ->left != NULL) succ = succ->left;
+
+    node->data = succ->data;
+
+    node->right = removeNode(node->right, succ->data);
+  }
+
+  updateHeight(node);
+
+  int balance = getBalance(node);
+
+  if(balance > 1 && getBalance(node->left) >= 0) {
+    return rotateRight(node);
+  }
+  if(balance > 1 && getBalance(node->left) < 0) {
+    node->left = rotateLeft(node->left);
+    return rotateRight(node);
+  } 
+  if(balance < -1 && getBalance(node->right) <= 0) {
+    return rotateLeft(node);
+  }
+  if(balance < -1 && getBalance(node->right) > 0) {
+    node->right = rotateRight(node->right);
+    return rotateLeft(node);
+  }
+
+  return node;
+}
+
 int main(void) {
   Node* tree = NULL;
 
